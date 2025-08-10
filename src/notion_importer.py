@@ -27,7 +27,7 @@ class NotionImporter:
             "Content-Type": "application/json",
         }
 
-    def fetch_from_api(self):
+    def fetch_from_api(self) -> list[Question]:
         data = []
 
         start_cursor = None
@@ -59,7 +59,7 @@ class NotionImporter:
 
         return self._transform(data)
 
-    def _transform(self, data):
+    def _transform(self, data) -> list[Question]:
         questions = []
         
         for page in data:

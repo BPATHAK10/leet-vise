@@ -7,15 +7,17 @@ from src.cache_manager import CacheManager
 from src.question_picker import QuestionPicker
 from src.display import Display
 from src.timer import TimerThread
-from src.tracker import Tracker
 
 def main():
+    # Handle the arguments
     parser = argparse.ArgumentParser(description="Leet-Vise: LeetCode revision CLI tool")
     parser.add_argument("--import-data", action="store_true", help="Fetch fresh data from Notion API")
     args = parser.parse_args()
 
+    # Initialize cache manager
     cache_manager = CacheManager()
 
+    # Import data if argument is provided
     if args.import_data:
         print("📥 Fetching data from Notion API...")
         importer = NotionImporter()
@@ -23,22 +25,26 @@ def main():
         cache_manager.save_cache(data)
         print(f"✅ Cache updated with {len(data)} questions.")
 
+    # Load questions from cache
     questions = cache_manager.load_cache()
     if not questions:
         print("No questions found in cache. Run with --import-data to fetch from Notion.")
         sys.exit(1)
 
+    # Welcome display
     Display.welcome()
     input()
 
     timer_length_sec = TIMER_MINUTES * 60
 
     while True:
-        question = QuestionPicker.pick_random(questions)
+        # Pick a question
+        question = QuestionPicker.pick_question(questions)
         if question is None:
             print("No questions available.")
             break
-
+        
+        # Show question and start timer
         Display.show_question(question)
         timer = TimerThread(timer_length_sec)
         timer.start()
@@ -46,8 +52,10 @@ def main():
         start_time = time.time()
 
         while timer.time_left > 0:
+            # Wait for user command
             cmd = input().strip().lower()
 
+            # Handle commands
             if cmd == "h":
                 Display.show_hint(question.get("hint", ""))
             elif cmd == "s":
@@ -66,6 +74,7 @@ def main():
         end_time = time.time()
         time_taken = int(end_time - start_time)
 
+        # See if user solved the question
         solved = input("Did you solve it? (y/n): ").strip().lower() == "y"
         
         if solved:
@@ -74,6 +83,7 @@ def main():
         else:
             print("No worries! Keep practicing and you'll get there.")
 
+        # Ask to continue or quit
         cont = input("Press ENTER for next question or type q to quit: ").strip().lower()
         if cont == "q":
             print("Great work today! See you next time.")

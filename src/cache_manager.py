@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from src.config import CACHE_FILE
+from src.notion_importer import Question
 
 class CacheManager:
     def __init__(self, cache_file=CACHE_FILE):
@@ -12,7 +13,7 @@ class CacheManager:
         with open(self.cache_file, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    def save_cache(self, data):
+    def save_cache(self, data: list[Question]):
         self.cache_file.parent.mkdir(parents=True, exist_ok=True)
         with open(self.cache_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
