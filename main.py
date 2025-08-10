@@ -15,7 +15,6 @@ def main():
     args = parser.parse_args()
 
     cache_manager = CacheManager()
-    tracker = Tracker()
 
     if args.import_data:
         print("📥 Fetching data from Notion API...")
